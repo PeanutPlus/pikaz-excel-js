@@ -3,19 +3,19 @@
  * @Date: 2021-01-09 14:35:36
  * @Author: zouzheng
  * @LastEditors: zouzheng
- * @LastEditTime: 2021-01-09 15:28:24
+ * @LastEditTime: 2021-01-09 17:35:26
  */
 import { saveAs } from 'file-saver'
 import XLSX from 'pikaz-xlsx-style'
 
 /**
- * @name:导出excel 
+ * @name:导出excel数据 
  * @param {type} 
  * @return: 
  */
-const exportExcel = () => {
+const exportExcel = (bookType, filename, sheet, enumData, fn) => {
     // 处理数据前
-    const beforeStart = this.beforeStart(this.bookType, this.filename, this.sheet)
+    const beforeStart = fn.beforeStart(this.bookType, this.filename, this.sheet)
     if (beforeStart === false) {
         return
     }
@@ -23,7 +23,7 @@ const exportExcel = () => {
         this.onError('Table data cannot be empty')
         return
     }
-    const wb = this.Workbook()
+    const wb = Workbook()
     this.sheet.forEach((item, index) => {
         let {
             // 标题
@@ -95,7 +95,7 @@ const exportExcel = () => {
         }
         tHeader && data.unshift(tHeader);
         title && data.unshift(title);
-        const ws = this.sheet_from_array_of_arrays(data);
+        const ws = sheet_from_array_of_arrays(data);
         if (merges && merges.length > 0) {
             if (!ws['!merges']) ws['!merges'] = [];
             merges.forEach(merge => {
@@ -184,9 +184,10 @@ const exportExcel = () => {
         })();
     })
     // 类型默认为xlsx
-    let bookType = this.enum.bookType.filter(i => i === this.bookType)[0] || this.enum.bookType[0];
-    this.writeExcel(wb, bookType, this.filename)
+    let bookType = enumData.bookType.filter(i => i === this.bookType)[0] || enumData.bookType[0];
+    writeExcel(wb, bookType, this.filename)
 },
+
 /**
  * @name: workbook对象
  * @param {type} 
@@ -212,7 +213,7 @@ const writeExcel = (wb, bookType, filename) => {
         bookSST: false,
         type: 'binary'
     });
-    const blob = new Blob([this.s2ab(wbout)], {
+    const blob = new Blob([s2ab(wbout)], {
         type: "application/octet-stream"
     })
     const beforeExport = this.beforeExport(blob, bookType, filename)
@@ -268,7 +269,7 @@ const sheet_from_array_of_arrays = (data, opts) => {
             else if (cell.v instanceof Date) {
                 cell.t = 'n';
                 cell.z = XLSX.SSF._table[14];
-                cell.v = this.datenum(cell.v);
+                cell.v = datenum(cell.v);
             } else cell.t = 's';
 
             ws[cell_ref] = cell;

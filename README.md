@@ -2,25 +2,29 @@
  * @Author: zouzheng
  * @Date: 2020-04-30 11:23:12
  * @LastEditors: zouzheng
- * @LastEditTime: 2020-06-15 18:06:41
+ * @LastEditTime: 2021-01-09 18:06:49
  * @Description: 这是XXX组件（页面）
  -->
-## Introduction
 
-这个项目是在工作中并没有找到一个开箱即用的excel导入导出插件，js里比较知名的[xlsx](https://github.com/SheetJS/sheetjs.git)插件免费版没办法修改样式，而[xlsx-style](https://github.com/protobi/js-xlsx.git)插件需要修改源码，都比较麻烦，所以在xlsx和xlsx-style的基础上做了简单的封装，做到开箱即用，降低使用成本。
+## 介绍
 
-## Features
+该项目的创建是因为在工作中并没有找到一个开箱即用的 excel 导入导出插件，js 里比较知名的[xlsx](https://github.com/SheetJS/sheetjs.git)插件免费版没办法修改样式，而[xlsx-style](https://github.com/protobi/js-xlsx.git)插件无人维护无法直接安装需要修改源码，都比较麻烦，所以在 xlsx 和 xlsx-style 库的基础上做了简单的封装，做到开箱即用，降低使用成本。
 
-* 支持导出excel文件，并可设置列宽，边框，字体，字体颜色，字号，对齐方式，背景色等样式。
-* 支持excel文件导入，生成json数据，考虑到客户端机器性能，导入大量数据时，推荐拆分数据分成多个文件导入。
+## 功能
+
+- 支持 excel 文件导出，并可设置列宽，边框，字体，字体颜色，字号，对齐方式，背景色等表格样式。
+- 支持 excel 文件导入，生成 json 数据，浏览器环境中考虑到客户端机器性能，导入大量数据时，推荐拆分数据分成多个文件导入。
+- 0.3.x 版本推出 [vue 组件版本](#vue-component)和[纯 js 版本](#pure-js)，可在浏览器和 node 环境中使用。
+- 另使用 koa2 构建一套 服务端的 excel 的导入导出 api，可供其他语言或项目在服务端快速调用。
+- 0.3.x 向下兼容 0.2.x。
 
 ## [demo](https://pikaz-18.github.io/pikaz-excel-js/example/index.html)
 
-### [demo代码](https://github.com/pikaz-18/pikaz-excel-js/tree/master/src/example/components)
+### [demo 代码](https://github.com/pikaz-18/pikaz-excel-js/tree/master/src/example/components)
 
-## Installation
+## 安装
 
-### With npm or yarn 
+### npm or yarn
 
 ```bash
 yarn add pikaz-excel-js
@@ -28,27 +32,36 @@ yarn add pikaz-excel-js
 npm i -S pikaz-excel-js
 ```
 
-### With cdn
-``` html
-<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/pikaz-excel-js"></script>
+### cdn
+
+```html
+<script
+  type="text/javascript"
+  src="https://cdn.jsdelivr.net/npm/pikaz-excel-js"
+></script>
 或者
 <script type="text/javascript" src="https://unpkg.com/pikaz-excel-js"></script>
 ```
 
-**请确保vue版本在2.0以上**
+<h5 id="vue-component"></h5>
 
-## For Vue-cli
+## vue 脚手架环境：
 
-### Export:
+**请确保 vue 版本在 2.0 以上**
 
-#### Typical use:
-``` html
+### 导出:
+
+#### 示例:
+
+```html
 <excel-export :sheet="sheet">
-   <div>导出</div>
+  <div>导出</div>
 </excel-export>
 ```
+
 .vue file:
-``` js
+
+```js
   import {ExcelExport} from 'pikaz-excel-js'
   ...
   export default {
@@ -70,31 +83,33 @@ npm i -S pikaz-excel-js
         }
   ...
 ```
-#### Attributes:
-参数|说明|类型|可选值|默认值
--|-|-|-|-
-bookType|文件格式|string|xlsx/xls|xlsx
-filename|文件名称|string|--|excel
-manual|手动导出模式，设置为true时，取消点击导出，并可调用[pikaExportExcel](#export-method)方法完成导出|boolean|true/false|false
-sheet|表格数据，每个表格数据对象配置具体看下方[表格配置](#table-setting)|array|--|--
-before-start|处理数据之前的钩子，参数为导出的文件格式，文件名，表格数据，若返回 false则停止导出|function(bookType, filename, sheet)|--|--
-before-export|导出文件之前的钩子，参数为导出的文件格式，文件名，blob文件流，若返回 false则停止导出|function(bookType, filename, sheet)|--|--
-on-error|导出失败的钩子，参数为错误信息|function(err)|--|--
+
+#### 组件参数:
+
+| 参数          | 说明                                                                                              | 类型                                | 可选值     | 默认值 |
+| ------------- | ------------------------------------------------------------------------------------------------- | ----------------------------------- | ---------- | ------ |
+| bookType      | 文件格式                                                                                          | string                              | xlsx/xls   | xlsx   |
+| filename      | 文件名称                                                                                          | string                              | --         | excel  |
+| manual        | 手动导出模式，设置为 true 时，取消点击导出，并可调用[pikaExportExcel](#export-method)方法完成导出 | boolean                             | true/false | false  |
+| sheet         | 表格数据，每个表格数据对象配置具体看下方[表格配置](#table-setting)                                | array                               | --         | --     |
+| before-start  | 处理数据之前的钩子，参数为导出的文件格式，文件名，表格数据，若返回 false 则停止导出               | function(bookType, filename, sheet) | --         | --     |
+| before-export | 导出文件之前的钩子，参数为导出的文件格式，文件名，blob 文件流，若返回 false 则停止导出            | function(bookType, filename, sheet) | --         | --     |
+| on-error      | 导出失败的钩子，参数为错误信息                                                                    | function(err)                       | --         | --     |
 
 <h5 id="table-setting">表格参数配置</h5>
 
-参数|说明|类型|可选值|默认值
--|-|-|-|-
-title|表格标题，自动设置合并，非必须项|string|--|--
-tHeader|表头，非必须项|array|--|--
-multiHeader|多级表头,即一个数组中包含多个表头数组，非必须项|array|--|--
-table|表格数据，如果无数据，设置为空字符""，避免使用null或undefined|array|--|--
-merges|合并单元格，合并的表头和表格多余数据项以空字符串填充，非必须项|array|--|--
-keys|数据键名，需与表头内容顺序对应|array|--|--
-colWidth|列宽，若不传，则列宽自适应（自动列宽时数据类型必须为string，如有其他数据类型，请手动设置列宽），数据量多时推荐设置列宽|array|--|--
-sheetName|表格名称|string|--|sheet
-globalStyle|表格全局样式，具体参数查看下方[表格全局样式](#global-style)|object|--|[表格全局样式](#global-style)
-cellStyle|单元格样式，每个单元格对象配置具体参数查看下方[单元格样式](#cell-style)|array|--|--
+| 参数        | 说明                                                                                                                    | 类型   | 可选值 | 默认值                        |
+| ----------- | ----------------------------------------------------------------------------------------------------------------------- | ------ | ------ | ----------------------------- |
+| title       | 表格标题，自动设置合并，非必须项                                                                                        | string | --     | --                            |
+| tHeader     | 表头，非必须项                                                                                                          | array  | --     | --                            |
+| multiHeader | 多级表头,即一个数组中包含多个表头数组，非必须项                                                                         | array  | --     | --                            |
+| table       | 表格数据，如果无数据，设置为空字符""，避免使用 null 或 undefined                                                        | array  | --     | --                            |
+| merges      | 合并单元格，合并的表头和表格多余数据项以空字符串填充，非必须项                                                          | array  | --     | --                            |
+| keys        | 数据键名，需与表头内容顺序对应                                                                                          | array  | --     | --                            |
+| colWidth    | 列宽，若不传，则列宽自适应（自动列宽时数据类型必须为 string，如有其他数据类型，请手动设置列宽），数据量多时推荐设置列宽 | array  | --     | --                            |
+| sheetName   | 表格名称                                                                                                                | string | --     | sheet                         |
+| globalStyle | 表格全局样式，具体参数查看下方[表格全局样式](#global-style)                                                             | object | --     | [表格全局样式](#global-style) |
+| cellStyle   | 单元格样式，每个单元格对象配置具体参数查看下方[单元格样式](#cell-style)                                                 | array  | --     | --                            |
 
 <h5 id="global-style">表格全局样式</h5>
 
@@ -241,22 +256,25 @@ cellStyle|单元格样式，每个单元格对象配置具体参数查看下方[
 
 <div id="export-method"></div>
 
-#### Methods:
+#### 组件方法:
 
-方法名|说明|参数
--|-|-
-pikaExportExcel|导出函数|--
+| 方法名          | 说明     | 参数 |
+| --------------- | -------- | ---- |
+| pikaExportExcel | 导出函数 | --   |
 
-### Import:
+### 导入:
 
-#### Typical use:
-``` html
+#### 示例:
+
+```html
 <excel-import :on-success="onSuccess">
-   <div>导入</div>
+  <div>导入</div>
 </excel-import>
 ```
+
 .vue file:
-``` js
+
+```js
   import {ExcelImport} from 'pikaz-excel-js'
   ...
   export default {
@@ -271,19 +289,25 @@ pikaExportExcel|导出函数|--
   ...
 ```
 
-#### Attributes:
-参数|说明|类型|可选值|默认值
--|-|-|-|-
-sheetNames|需要导入表的表名，如['插件信息']|Array|--|--
-removeBlankspace|是否移除数据中字符串的空格|Boolean|true/false|false
-removeSpecialchar|是否移除不同版本及环境下excel数据中出现的特殊不可见字符，如u202D等,使用此功能，返回的数据将被转化为字符串|Boolean|true/false|true
-before-import|文件导入前的钩子，参数file为导入文件|function(file)|--|--
-on-progress|文件导入时的钩子|function(event,file)|--|--
-on-change|文件状态改变时的钩子，导入文件、导入成功和导入失败时都会被调用|function(file)|--|--
-on-success|文件导入成功的钩子，参数response为生成的json数据|function(response, file)|--|--
-on-error|文件导入失败的钩子，参数error为错误信息|function(error, file)|--|--
+#### 组件参数:
+
+| 参数              | 说明                                                                                                          | 类型                     | 可选值     | 默认值 |
+| ----------------- | ------------------------------------------------------------------------------------------------------------- | ------------------------ | ---------- | ------ |
+| sheetNames        | 需要导入表的表名，如['插件信息']                                                                              | Array                    | --         | --     |
+| removeBlankspace  | 是否移除数据中字符串的空格                                                                                    | Boolean                  | true/false | false  |
+| removeSpecialchar | 是否移除不同版本及环境下 excel 数据中出现的特殊不可见字符，如 u202D 等,使用此功能，返回的数据将被转化为字符串 | Boolean                  | true/false | true   |
+| before-import     | 文件导入前的钩子，参数 file 为导入文件                                                                        | function(file)           | --         | --     |
+| on-progress       | 文件导入时的钩子                                                                                              | function(event,file)     | --         | --     |
+| on-change         | 文件状态改变时的钩子，导入文件、导入成功和导入失败时都会被调用                                                | function(file)           | --         | --     |
+| on-success        | 文件导入成功的钩子，参数 response 为生成的 json 数据                                                          | function(response, file) | --         | --     |
+| on-error          | 文件导入失败的钩子，参数 error 为错误信息                                                                     | function(error, file)    | --         | --     |
+
+<h5 id="pure-js"></h5>
+
+## 纯 js 版本
 
 ## Reference
+
 [https://www.jianshu.com/p/31534691ed53](https://www.jianshu.com/p/31534691ed53)
 
 [https://www.cnblogs.com/yinxingen/p/11052184.html](https://www.cnblogs.com/yinxingen/p/11052184.html)

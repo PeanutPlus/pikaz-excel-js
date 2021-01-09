@@ -2,42 +2,60 @@
  * @Author: zouzheng
  * @Date: 2020-05-07 14:57:19
  * @LastEditors: zouzheng
- * @LastEditTime: 2020-08-10 23:09:54
+ * @LastEditTime: 2021-01-09 18:26:15
  * @Description: 这是exportDemo组件（页面）
  -->
 <template>
   <div class="export-demo">
     <!-- 点击导出 -->
-    <excel-export :bookType="bookType" :filename="filename" :sheet="sheet" :on-error="onError">
+    <excel-export
+      :bookType="bookType"
+      :filename="filename"
+      :sheet="sheet"
+      :on-error="onError"
+    >
       <div class="export-btn">点击导出</div>
     </excel-export>
     <!-- 手动导出 -->
-    <!-- <excel-export :bookType="bookType" :filename="filename" :sheet="sheet" :on-error="onError" :manual="true"
-      ref="excelExport">
+    <excel-export
+      :bookType="bookType"
+      :filename="filename"
+      :sheet="sheet"
+      :on-error="onError"
+      :manual="true"
+      ref="excelExport"
+    >
     </excel-export>
-    <div @click="exportTable">点击导出</div> -->
+    <div class="export-btn" @click="exportTable">点击异步导出</div>
   </div>
 </template>
 
 <script>
-import { ExcelExport } from '../../plugin'
+import { ExcelExport } from "../../plugin";
 export default {
   props: {},
   components: { ExcelExport },
-  data () {
+  data() {
     return {
-      bookType: 'xlsx',
-      filename: 'export-demo',
+      bookType: "xlsx",
+      filename: "export-demo",
       sheet: [
         {
-          title: '插件信息',
-          tHeader: ['作者', '语言', '插件名称', '插件用途'],
-          table: [{ author: 'pikaz', language: 'javascript', name: 'pikaz-excel-js', application: 'excel的导入导出' }],
-          keys: ['author', 'language', 'name', 'application'],
-          sheetName: '插件信息',
+          title: "插件信息",
+          tHeader: ["作者", "语言", "插件名称", "插件用途"],
+          table: [
+            {
+              author: "pikaz",
+              language: "javascript",
+              name: "pikaz-excel-js",
+              application: "excel的导入导出",
+            },
+          ],
+          keys: ["author", "language", "name", "application"],
+          sheetName: "插件信息",
           cellStyle: [
             {
-              cell: 'A1',
+              cell: "A1",
               font: {
                 sz: 14,
                 color: { rgb: "ffffff" },
@@ -45,66 +63,92 @@ export default {
               },
               fill: {
                 fgColor: { rgb: "ff7e00" },
-              }
-            }
-          ]
+              },
+            },
+          ],
         },
         {
-          title: '插件信息2',
-          multiHeader: [['基础信息', '', '', '详细信息'], ['作者', '语言', '插件名称', '插件用途']],
-          table: [{ author: 'pikaz', language: 'javascript', name: 'pikaz-excel-js', application: 'excel的导入导出' }],
-          keys: ['author', 'language', 'name', 'application'],
-          merges: ['A2:C2'],
+          title: "插件信息2",
+          multiHeader: [
+            ["基础信息", "", "", "详细信息"],
+            ["作者", "语言", "插件名称", "插件用途"],
+          ],
+          table: [
+            {
+              author: "pikaz",
+              language: "javascript",
+              name: "pikaz-excel-js",
+              application: "excel的导入导出",
+            },
+          ],
+          keys: ["author", "language", "name", "application"],
+          merges: ["A2:C2"],
           colWidth: [16, 16, 16, 20],
-          sheetName: '插件信息2',
+          sheetName: "插件信息2",
           globalStyle: {
             font: {
               color: { rgb: "ff7e00" },
-            }
+            },
           },
           cellStyle: [
             {
-              cell: 'A1',
+              cell: "A1",
               font: {
-                name: '宋体',
+                name: "宋体",
                 sz: 14,
                 color: { rgb: "ffffff" },
-                bold: true
+                bold: true,
               },
               fill: {
                 fgColor: { rgb: "ff7e00" },
-              }
-            }
-          ]
-        }
-      ]
-    }
+              },
+            },
+          ],
+        },
+      ],
+    };
   },
-  created () {
-  },
-  mounted () {
-  },
+  created() {},
+  mounted() {},
   methods: {
     /**
      * @name: 导出错误
-     * @param {String} err/错误信息 
-     * @return: 
+     * @param {String} err/错误信息
+     * @return:
      */
-    onError (err) {
-      console.log(err)
+    onError(err) {
+      console.log(err);
     },
     /**
-     * @name: 手动导出
-     * @param {type} 
-     * @return: 
+     * @name: 异步导出
+     * @param {type}
+     * @return:
      */
-    exportTable () {
-      this.$refs.excelExport.pikaExportExcel()
-    }
+    exportTable() {
+      // 发出请求获取数据
+      this.getData().then((res) => {
+        // 请求获取数据到的数据按参数格式赋值给sheet参数
+        this.sheet = res;
+        // 调用导出函数
+        this.$refs.excelExport.pikaExportExcel();
+      });
+    },
+    /**
+     * @description:模拟异步请求获取数据
+     * @param {*}
+     * @return {*}
+     */
+    getData() {
+      return new Promise((resolve, reject) => {
+        setTimeout(() => {
+          resolve(this.sheet);
+        }, 100);
+      });
+    },
   },
   computed: {},
   watch: {},
-}
+};
 </script>
 
 <style scoped>
@@ -116,12 +160,11 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 80px;
-  height: 30px;
   background: #ff7e00;
-  border-radius: 5px;
+  border-radius: 4px;
   color: #ffffff;
   cursor: pointer;
+  padding: 8px;
 }
 .code {
   margin-left: 100px;
